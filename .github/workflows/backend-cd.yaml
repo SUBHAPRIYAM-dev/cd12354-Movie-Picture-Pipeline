@@ -12,7 +12,7 @@ on:
 env:
   PYTHON_VERSION: '3.10'
   BACKEND_DIRECTORY: starter/backend
-  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_REGION: ap-south-1
   EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
   ECR_REPOSITORY: ${{ secrets.BACKEND_ECR_REPOSITORY }}
 
@@ -99,12 +99,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
-  uses: aws-actions/configure-aws-credentials@v4
-  with:
-    aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-    aws-region: ap-south-1 # Or whatever region you are deploying to
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -140,6 +140,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Update kubeconfig
