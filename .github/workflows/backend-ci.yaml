@@ -12,6 +12,7 @@ on:
 env:
   PYTHON_VERSION: '3.10'
   BACKEND_DIRECTORY: starter/backend
+  PIPENV_PIPFILE: starter/backend/Pipfile
 
 jobs:
   lint:
@@ -27,19 +28,21 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('starter/backend/Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install pipenv
-        run: pip install pipenv
+        run: pip install pipenv --upgrade
 
       - name: Install dependencies
-        working-directory: ${{ env.BACKEND_DIRECTORY }}
-        env:
-          PIPENV_CUSTOM_VENV_NAME: lint-${{ github.run_id }}
-        run: |
-          rm -rf ~/.local/share/virtualenvs
-          pipenv install --dev
+        run: pipenv install --dev
 
       - name: Run lint
-        working-directory: ${{ env.BACKEND_DIRECTORY }}
         run: pipenv run lint
 
   test:
@@ -55,19 +58,21 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('starter/backend/Pipfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install pipenv
-        run: pip install pipenv
+        run: pip install pipenv --upgrade
 
       - name: Install dependencies
-        working-directory: ${{ env.BACKEND_DIRECTORY }}
-        env:
-          PIPENV_CUSTOM_VENV_NAME: test-${{ github.run_id }}
-        run: |
-          rm -rf ~/.local/share/virtualenvs
-          pipenv install --dev
+        run: pipenv install --dev
 
       - name: Run tests
-        working-directory: ${{ env.BACKEND_DIRECTORY }}
         run: pipenv run test
 
   build:
