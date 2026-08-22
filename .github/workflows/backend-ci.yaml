@@ -30,9 +30,7 @@ jobs:
       - name: Restore pipenv cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/pip
-            ~/.local/share/virtualenvs
+          path: ~/.local/share/virtualenvs
           key: ${{ runner.os }}-backend-pipenv-${{ hashFiles('starter/backend/Pipfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-backend-pipenv-
@@ -64,9 +62,7 @@ jobs:
       - name: Restore pipenv cache
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/pip
-            ~/.local/share/virtualenvs
+          path: ~/.local/share/virtualenvs
           key: ${{ runner.os }}-backend-pipenv-${{ hashFiles('starter/backend/Pipfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-backend-pipenv-
@@ -76,7 +72,8 @@ jobs:
 
       - name: Install dependencies
         working-directory: ${{ env.BACKEND_DIRECTORY }}
-        run: pipenv install --dev
+        run: |
+          pipenv install --dev --clear || pipenv install --dev
 
       - name: Run tests
         working-directory: ${{ env.BACKEND_DIRECTORY }}
