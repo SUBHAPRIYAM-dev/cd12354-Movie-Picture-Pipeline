@@ -117,12 +117,17 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          if [ -z "$ECR_REPOSITORY" ]; then
+            echo "Error: ECR_REPOSITORY secret is not set. Please add BACKEND_ECR_REPOSITORY to your repository secrets."
+            exit 1
+          fi
+          
           IMAGE_URI=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
+          
           docker build --tag $IMAGE_URI .
-
+          
           docker push $IMAGE_URI
-
+          
           echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
 
   deploy:
