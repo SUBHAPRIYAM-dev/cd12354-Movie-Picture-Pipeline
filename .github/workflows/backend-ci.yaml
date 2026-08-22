@@ -35,13 +35,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-lint-
 
-      - name: Install dependencies from Pipfile.lock
+      - name: Install dependencies
         working-directory: ${{ env.BACKEND_DIRECTORY }}
         run: |
-          pip install --upgrade pip
-          pip install pipfile-requirements
-          pipfile-requirements Pipfile.lock > requirements.txt
-          pip install -r requirements.txt black flake8
+          python -m pip install --upgrade pip
+          pip install pipenv
+          pipenv install --dev --system
 
       - name: Run lint
         working-directory: ${{ env.BACKEND_DIRECTORY }}
@@ -68,13 +67,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-test-
 
-      - name: Install dependencies from Pipfile.lock
+      - name: Install dependencies
         working-directory: ${{ env.BACKEND_DIRECTORY }}
         run: |
-          pip install --upgrade pip
-          pip install pipfile-requirements
-          pipfile-requirements Pipfile.lock > requirements.txt
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install pipenv
+          pipenv install --dev --system
 
       - name: Run tests
         working-directory: ${{ env.BACKEND_DIRECTORY }}
