@@ -27,20 +27,16 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Restore pipenv cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-backend-pipenv-${{ hashFiles('starter/backend/Pipfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-backend-pipenv-
-
       - name: Install pipenv
         run: pip install pipenv
 
       - name: Install dependencies
         working-directory: ${{ env.BACKEND_DIRECTORY }}
-        run: pipenv install --dev
+        env:
+          PIPENV_CUSTOM_VENV_NAME: lint-${{ github.run_id }}
+        run: |
+          rm -rf ~/.local/share/virtualenvs
+          pipenv install --dev
 
       - name: Run lint
         working-directory: ${{ env.BACKEND_DIRECTORY }}
@@ -59,21 +55,16 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Restore pipenv cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-backend-pipenv-${{ hashFiles('starter/backend/Pipfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-backend-pipenv-
-
       - name: Install pipenv
         run: pip install pipenv
 
       - name: Install dependencies
         working-directory: ${{ env.BACKEND_DIRECTORY }}
+        env:
+          PIPENV_CUSTOM_VENV_NAME: test-${{ github.run_id }}
         run: |
-          pipenv install --dev --clear || pipenv install --dev
+          rm -rf ~/.local/share/virtualenvs
+          pipenv install --dev
 
       - name: Run tests
         working-directory: ${{ env.BACKEND_DIRECTORY }}
