@@ -12,8 +12,6 @@ on:
 env:
   PYTHON_VERSION: '3.10'
   BACKEND_DIRECTORY: starter/backend
-  PIPENV_PIPFILE: starter/backend/Pipfile
-  PIPENV_VENV_IN_PROJECT: 'true'
 
 jobs:
   lint:
@@ -29,24 +27,25 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install pipenv
-        run: pip install --upgrade pipenv
-
-      - name: Cache virtual environment
+      - name: Cache dependencies
         uses: actions/cache@v4
         with:
-          path: ${{ env.BACKEND_DIRECTORY }}/.venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('starter/backend/Pipfile.lock') }}
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-lint-${{ hashFiles('starter/backend/Pipfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
+            ${{ runner.os }}-pip-lint-
 
-      - name: Install dependencies
+      - name: Install dependencies from Pipfile.lock
         working-directory: ${{ env.BACKEND_DIRECTORY }}
-        run: pipenv install --dev --deploy
+        run: |
+          pip install --upgrade pip
+          pip install pipfile-requirements
+          pipfile-requirements Pipfile.lock > requirements.txt
+          pip install -r requirements.txt black flake8
 
       - name: Run lint
         working-directory: ${{ env.BACKEND_DIRECTORY }}
-        run: pipenv run lint
+        run: flake8 .
 
   test:
     name: Backend Test
@@ -61,24 +60,25 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Install pipenv
-        run: pip install --upgrade pipenv
-
-      - name: Cache virtual environment
+      - name: Cache dependencies
         uses: actions/cache@v4
         with:
-          path: ${{ env.BACKEND_DIRECTORY }}/.venv
-          key: ${{ runner.os }}-venv-${{ hashFiles('starter/backend/Pipfile.lock') }}
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-test-${{ hashFiles('starter/backend/Pipfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
+            ${{ runner.os }}-pip-test-
 
-      - name: Install dependencies
+      - name: Install dependencies from Pipfile.lock
         working-directory: ${{ env.BACKEND_DIRECTORY }}
-        run: pipenv install --dev --deploy
+        run: |
+          pip install --upgrade pip
+          pip install pipfile-requirements
+          pipfile-requirements Pipfile.lock > requirements.txt
+          pip install -r requirements.txt
 
       - name: Run tests
         working-directory: ${{ env.BACKEND_DIRECTORY }}
-        run: pipenv run test
+        run: pytest -v
 
   build:
     name: Backend Build
