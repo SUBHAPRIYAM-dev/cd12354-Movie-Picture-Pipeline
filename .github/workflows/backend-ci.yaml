@@ -13,6 +13,7 @@ env:
   PYTHON_VERSION: '3.10'
   BACKEND_DIRECTORY: starter/backend
   PIPENV_PIPFILE: starter/backend/Pipfile
+  PIPENV_VENV_IN_PROJECT: 'true'
 
 jobs:
   lint:
@@ -28,21 +29,23 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Cache pip packages
+      - name: Install pipenv
+        run: pip install --upgrade pipenv
+
+      - name: Cache virtual environment
         uses: actions/cache@v4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('starter/backend/Pipfile.lock') }}
+          path: ${{ env.BACKEND_DIRECTORY }}/.venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('starter/backend/Pipfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install pipenv
-        run: pip install pipenv --upgrade
+            ${{ runner.os }}-venv-
 
       - name: Install dependencies
-        run: pipenv install --dev
+        working-directory: ${{ env.BACKEND_DIRECTORY }}
+        run: pipenv install --dev --deploy
 
       - name: Run lint
+        working-directory: ${{ env.BACKEND_DIRECTORY }}
         run: pipenv run lint
 
   test:
@@ -58,21 +61,23 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Cache pip packages
+      - name: Install pipenv
+        run: pip install --upgrade pipenv
+
+      - name: Cache virtual environment
         uses: actions/cache@v4
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('starter/backend/Pipfile.lock') }}
+          path: ${{ env.BACKEND_DIRECTORY }}/.venv
+          key: ${{ runner.os }}-venv-${{ hashFiles('starter/backend/Pipfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install pipenv
-        run: pip install pipenv --upgrade
+            ${{ runner.os }}-venv-
 
       - name: Install dependencies
-        run: pipenv install --dev
+        working-directory: ${{ env.BACKEND_DIRECTORY }}
+        run: pipenv install --dev --deploy
 
       - name: Run tests
+        working-directory: ${{ env.BACKEND_DIRECTORY }}
         run: pipenv run test
 
   build:
