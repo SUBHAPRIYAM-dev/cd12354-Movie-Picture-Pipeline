@@ -471,3 +471,8 @@ kustomize build | kubectl apply -f -
 [License](LICENSE.md)
 
 Frontend CI verification update.
+
+## Project Verification Screenshots
+- **Pod Status:** ![Pod Status](screenshots/kubectl-get-all.png)
+- **Backend API:** ![Backend API](screenshots/backend-api.png)
+- **Frontend App:** ![Frontend App](screenshots/frontend-app.png)
