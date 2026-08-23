@@ -473,6 +473,6 @@ kustomize build | kubectl apply -f -
 Frontend CI verification update.
 
 ## Project Verification Screenshots
-- **Pod Status:** ![Pod Status](screenshots/kubectl-get-all.png)
+- **Pod Status:** ![Pod Status](screenshots/pod-status.png)
 - **Backend API:** ![Backend API](screenshots/backend-api.png)
-- **Frontend App:** ![Frontend App](screenshots/frontend-app.png)
+- **Frontend App:** ![Frontend App](screenshots/frontend-ui.png)
